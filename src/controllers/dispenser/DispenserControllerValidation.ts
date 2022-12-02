@@ -8,7 +8,7 @@ export default class DispenserControllerValidation {
     }
     
     validateAddMiddleware(req: Request, res: Response, next: NextFunction) {
-        if (req.body.hasOwnProperty("flow_volume")) {
+        if (!req.body.hasOwnProperty("flow_volume")) {
           return this.handleResponseErrorFn(res, 400, "flow_volume is required");
         }
         if (typeof req.body.flow_volume !== "number") {

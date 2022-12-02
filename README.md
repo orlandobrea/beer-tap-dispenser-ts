@@ -11,3 +11,15 @@ Patterns:
 * Strategy to easily switch the way costs are computed and to make the testing process easier 
 
 Try to use Interfaces and DTO to decouple layers. 
+
+## Running the app 
+
+```
+npm run
+```
+
+## Testing
+
+```
+npm test
+```

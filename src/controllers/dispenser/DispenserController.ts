@@ -75,17 +75,17 @@ export default class DispenserController {
   addRoutes() {
     this.app.post(
       "/dispenser",
-      this.validations.validateAddMiddleware,
+      this.validations.validateAddMiddleware.bind(this.validations),
       this.addDispenser.bind(this)
     );
     this.app.put(
       "/dispenser/:id/status",
-      this.validations.validateUpdateMiddleware,
+      this.validations.validateUpdateMiddleware.bind(this.validations),
       this.updateDispenserStatus.bind(this)
     );
     this.app.get(
       "/dispenser/:id/spending",
-      this.validations.validateGetSpentMiddleware,
+      this.validations.validateGetSpentMiddleware.bind(this.validations),
       this.getSpent.bind(this)
     )
   }

@@ -3,7 +3,6 @@ import CostStrategy from "../../../services/impl/costStrategy/CostStrategy";
 import DispenserService from "../../../services/impl/DispenserService";
 import DispenserController from "../DispenserController";
 import supertest from "supertest";
-import exp from "constants";
 
 const COST_PER_LITRE = 1;
 const dispenserService = new DispenserService(
@@ -24,6 +23,23 @@ describe("DispenserController", () => {
         expect(response.body.flow_volume).toBe(INPUT_FLOW_VOLUME)
     })
 
+    it("create validations - not sending flow_volume", async() => {
+        const response: any = await request.post("/dispenser").send({});
+        expect(response.statusCode).toBe(400);
+    })
+
+    it("create validations - flow_volume is not a number", async() => {
+        const INPUT_FLOW_VOLUME = "abc";
+        const response: any = await request.post("/dispenser").send({flow_volume: INPUT_FLOW_VOLUME});
+        expect(response.statusCode).toBe(400);
+    })
+
+    it("create validations - flow_volume is negative", async() => {
+        const INPUT_FLOW_VOLUME = -0.001;
+        const response: any = await request.post("/dispenser").send({flow_volume: INPUT_FLOW_VOLUME});
+        expect(response.statusCode).toBe(400);
+    })
+
     it("update", async() => {
         const INPUT_FLOW_VOLUME = 1.22;
         const response: any = await request.post("/dispenser").send({flow_volume: INPUT_FLOW_VOLUME});
@@ -36,12 +52,10 @@ describe("DispenserController", () => {
         const INPUT_FLOW_VOLUME = 1.22;
         const EXPECTED_AMOUNT = COST_PER_LITRE * 60 * INPUT_FLOW_VOLUME;
         const response: any = await request.post("/dispenser").send({flow_volume: INPUT_FLOW_VOLUME});
-        console.log('------------', response.body)
         const id = response.body.id;
         await request.put(`/dispenser/${id}/status`).send({status: "open", updated_at: "2022-11-30T01:00:00Z"});
         await request.put(`/dispenser/${id}/status`).send({status: "closed", updated_at: "2022-11-30T01:01:00Z"});
         const response3: any = await request.get(`/dispenser/${id}/spending`);
-        console.log(response3.body);
         expect(response3.statusCode).toBe(200);
         expect(response3.body.amount).toBe(EXPECTED_AMOUNT);
         expect(response3.body.usages.length).toBe(1)
